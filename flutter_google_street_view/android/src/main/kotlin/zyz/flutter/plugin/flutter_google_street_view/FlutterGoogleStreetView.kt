@@ -26,7 +26,8 @@ class FlutterGoogleStreetView(
     id: Int,
     creationParams: Map<String?, Any?>?,
     binaryMessenger: BinaryMessenger,
-    lifecycleProvider: Lifecycle
+    lifecycleProvider: Lifecycle,
+    private val registrar: FlutterPlugin.FlutterPluginBinding
 ) : DefaultLifecycleObserver, OnSaveInstanceStateListener, PlatformView, MethodChannel.MethodCallHandler, StreetViewListener {
 
     companion object {
@@ -45,6 +46,8 @@ class FlutterGoogleStreetView(
     private var lastMoveToPanoId:String? = null
     private var creationParams: Map<String?, Any?>? = null
     private var reuseStreetView = false
+    private val markersController: FLTStreetViewMarkersController
+
     init {
         this.creationParams = creationParams
         initOptions = createInitOption(creationParams)
@@ -80,8 +83,14 @@ class FlutterGoogleStreetView(
                 }
             }
         }
+        
+        streetView.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        val frameLayout = registrar.activity.findViewById<FrameLayout>(android.R.id.content)
+        frameLayout.addView(streetView)
+
         lockStreetView[streetView!!] = true
         methodChannel = MethodChannel(binaryMessenger, "flutter_google_street_view_$id")
+        markersController = FLTStreetViewMarkersController(methodChannel, registrar)
         methodChannel.setMethodCallHandler(this)
         lifecycleProvider.addObserver(this)
     }
@@ -407,6 +416,14 @@ class FlutterGoogleStreetView(
             }
             "streetView#deactivate" -> {
                 deactivateStreetView()
+                result.success(null)
+            }
+            "markers#update" -> {
+                val markersToAdd = call.argument<List<Map<String, Any>>>("markersToAdd")
+                val markersToChange = call.argument<List<Map<String, Any>>>("markersToChange")
+                val markerIdsToRemove = call.argument<List<String>>("markerIdsToRemove")
+
+                markersController.updateMarkers(markersToAdd, markersToChange, markerIdsToRemove)
                 result.success(null)
             }
         }

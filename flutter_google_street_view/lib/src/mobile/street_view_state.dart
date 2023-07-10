@@ -88,7 +88,7 @@ class StreetViewState extends StreetViewBaseState {
   }
 
   void _updateMarkers() async {
-    if (!Platform.isIOS) return;
+    if (!Platform.isIOS || Platform.isAndroid) return;
     if (widget.markers == null) return;
     final StreetViewController controller = await _controller.future;
     // ignore: unawaited_futures

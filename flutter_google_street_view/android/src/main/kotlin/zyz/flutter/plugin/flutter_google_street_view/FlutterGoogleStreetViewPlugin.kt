@@ -66,7 +66,7 @@ class FlutterGoogleStreetViewPlugin: ActivityLifecycleCallbacks,
     lifecycle?.addObserver(this)
     pluginBinding?.apply {
       platformViewRegistry.registerViewFactory(
-        "my_street_view", FlutterGoogleStreetViewFactory(binaryMessenger, lifecycle!!)
+        "my_street_view", FlutterGoogleStreetViewFactory(binaryMessenger, lifecycle!!, flutterPluginBinding)
       )
     }
   }

@@ -8,10 +8,10 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
 class FlutterGoogleStreetViewFactory(private val binaryMessenger: BinaryMessenger,
-                                     private val lifecycleProvider: Lifecycle
+                                     private val lifecycleProvider: Lifecycle, private val registrar: FlutterPlugin.FlutterPluginBinding
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context?, id: Int, args: Any?): PlatformView {
         val creationParams = args as Map<String?, Any?>?
-        return FlutterGoogleStreetView(context!!, id, creationParams, binaryMessenger, lifecycleProvider)
+        return FlutterGoogleStreetView(context!!, id, creationParams, binaryMessenger, lifecycleProvider, flutterPluginBinding)
     }
 }
