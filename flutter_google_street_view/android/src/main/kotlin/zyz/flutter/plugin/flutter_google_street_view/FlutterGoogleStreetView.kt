@@ -8,6 +8,8 @@ import android.view.View
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import android.view.ViewGroup.LayoutParams
+import android.widget.FrameLayout
 import com.google.android.gms.maps.StreetViewPanorama
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.StreetViewPanoramaView
@@ -27,7 +29,7 @@ class FlutterGoogleStreetView(
     creationParams: Map<String?, Any?>?,
     binaryMessenger: BinaryMessenger,
     lifecycleProvider: Lifecycle,
-    private val registrar: FlutterPlugin.FlutterPluginBinding
+    flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
 ) : DefaultLifecycleObserver, OnSaveInstanceStateListener, PlatformView, MethodChannel.MethodCallHandler, StreetViewListener {
 
     companion object {
@@ -85,12 +87,12 @@ class FlutterGoogleStreetView(
         }
         
         streetView.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        val frameLayout = registrar.activity.findViewById<FrameLayout>(android.R.id.content)
+        val frameLayout = flutterPluginBinding.activity.findViewById<FrameLayout>(android.R.id.content)
         frameLayout.addView(streetView)
 
         lockStreetView[streetView!!] = true
         methodChannel = MethodChannel(binaryMessenger, "flutter_google_street_view_$id")
-        markersController = FLTStreetViewMarkersController(methodChannel, registrar)
+        markersController = FLTStreetViewMarkersController(methodChannel, flutterPluginBinding)
         methodChannel.setMethodCallHandler(this)
         lifecycleProvider.addObserver(this)
     }
